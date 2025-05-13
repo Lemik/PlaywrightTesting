@@ -40,5 +40,6 @@ pytest --browser webkit
 | tests/test_example.py::test_homepage_title |Run a specific test function|
 | --headed                                   |run tests with UI|
 | -k "homepage"                              |Run tests matching a pattern|
+| -v     |Run with verbose output|
 
 ```
