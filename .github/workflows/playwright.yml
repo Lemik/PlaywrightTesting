@@ -39,5 +39,7 @@ jobs:
           echo "TenantB_USER_EMAIL=${{ secrets.TenantB_USER_EMAIL }}" >> .env
           echo "TenantB_USER_PASSWORD=${{ secrets.TenantB_USER_PASSWORD }}" >> .env
 
+          echo "URL=${{ secrets.URL }}" >> .env
+
       - name: Run tests
         run:  python -m pytest -v
