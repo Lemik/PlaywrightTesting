@@ -1,5 +1,7 @@
+import os
 import pytest
 from playwright.sync_api import sync_playwright
+from dotenv import load_dotenv
 
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
@@ -14,7 +16,7 @@ def browser_context_args(browser_context_args):
 
 @pytest.fixture(scope="session")
 def base_url():
-    return "http://localhost:3000"  # Change this to your application's URL 
+    return os.getenv('URL')
 
 @pytest.fixture(scope="function")
 def slow_mo():
