@@ -20,6 +20,20 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      
+      - name: Import secrets to .env file
+        run: |
+          echo "LANDLORD_USER_EMAIL=${{ secrets.LANDLORD_USER_EMAIL }}" >> .env
+          echo "LANDLORD_USER_PASSWORD=${{ secrets.LANDLORD_USER_PASSWORD }}" >> .env
+
+          echo "ADMIN_USER_EMAIL=${{ secrets.ADMIN_USER_EMAIL }}" >> .env
+          echo "ADMIN_USER_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }}" >> .env
+
+          echo "TenantA_USER_EMAIL=${{ secrets.TenantA_USER_EMAIL }}" >> .env
+          echo "TenantA_USER_PASSWORD=${{ secrets.TenantA_USER_PASSWORD }}" >> .env
+
+          echo "TenantB_USER_EMAIL=${{ secrets.TenantB_USER_EMAIL }}" >> .env
+          echo "TenantB_USER_PASSWORD=${{ secrets.TenantB_USER_PASSWORD }}" >> .env
 
       - name: Run tests
         run: tests/before_login_tests.py 
