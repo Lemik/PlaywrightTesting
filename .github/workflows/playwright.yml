@@ -36,4 +36,4 @@ jobs:
           echo "TenantB_USER_PASSWORD=${{ secrets.TenantB_USER_PASSWORD }}" >> .env
 
       - name: Run tests
-        run: tests/before_login_tests.py 
+        run:  python -m pytest -v
