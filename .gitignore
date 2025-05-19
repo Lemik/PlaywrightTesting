@@ -36,3 +36,4 @@ wheels/
 test-results/
 playwright-report/
 playwright/.cache/ 
+reports/*

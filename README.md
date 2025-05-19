@@ -112,6 +112,8 @@ pytest --browser webkit
 | `pytest -k "homepage"` | Run tests matching a pattern |
 | `pytest -v` | Run with verbose output |
 | `pytest --html=report.html` | Generate HTML test report |
+| `PWDEBUG=1 pytest tests/test_admin_login.py` | Debug |
+| `pytest tests/test_admin_login.py -v --log-cli-level=DEBUG` | Run with debug logging |
 
 ## 📁 Project Structure
 

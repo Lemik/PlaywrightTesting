@@ -1,44 +1,30 @@
 import os
 from dotenv import load_dotenv
 import pytest
-from playwright.sync_api import expect, TimeoutError
+from playwright.sync_api import expect, TimeoutError, Page
+from pom.tenant_page import TenantPage
 
 # Load environment variables
 load_dotenv(override=True)
 
-# Debug: Print all environment variables
-print("All environment variables:")
-for key, value in os.environ.items():
-    print(f"{key}: {value}")
+@pytest.fixture
+def tenant_page(page: Page, base_url: str):
+    """Fixture to provide a TenantPage instance"""
+    return TenantPage(page, base_url)
 
-# Debug: Print specific variables we're trying to access
-print("\nSpecific variables we need:")
-print(f"TenantA_USER_EMAIL: {os.getenv('TenantA_USER_EMAIL')}")
-print(f"TenantA_USER_PASSWORD: {os.getenv('TenantA_USER_PASSWORD')}")
-
-def test_successful_login(page, base_url):
-    """Test successful login with valid credentials"""
-    # Navigate to login page
-    page.goto(f"{base_url}/login")
-    
-    # Get credentials from environment variables
+@pytest.fixture
+def tenant_credentials():
+    """Fixture to provide tenant credentials"""
     email = os.getenv('TenantA_USER_EMAIL')
     password = os.getenv('TenantA_USER_PASSWORD')
     
     if not email or not password:
         pytest.fail("TenantA_USER_EMAIL and TenantA_USER_PASSWORD must be set in .env file")
     
-    
-    # Fill in login 
-    page.fill('input[type="email"]', email)
-    page.fill('input[type="password"]', password)
-    
-    # Click login button
-    page.wait_for_selector('button.login-button')
-    page.click('button.login-button')
-    
-    # Wait for navigation after successful login
-    page.wait_for_url(f"{base_url}/welcome")
-    
-    # Verify we're on the dashboard
-    expect(page).to_have_url(f"{base_url}/welcome")
+    return {"email": email, "password": password}
+
+def test_successful_login(tenant_page: TenantPage, tenant_credentials: dict):
+    """Test successful login with valid credentials"""
+    tenant_page.navigate_to_login()
+    tenant_page.login(tenant_credentials["email"], tenant_credentials["password"])
+    expect(tenant_page.page).to_have_url(f"{tenant_page.base_url}/welcome")
