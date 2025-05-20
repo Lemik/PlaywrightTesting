@@ -49,4 +49,49 @@ class LandlordPage:
         expect(self.page.locator("text=Error")).not_to_be_visible()
         expect(self.page.locator("text=404")).not_to_be_visible()
         expect(self.page.locator("text=Not Found")).not_to_be_visible()
-        expect(self.page.locator("body")).not_to_be_empty() 
+        expect(self.page.locator("body")).not_to_be_empty()
+
+    # Navigation methods for specific pages
+    def navigate_to_welcome(self):
+        """Navigate to the welcome page."""
+        self.navigate_to_page("/welcome")
+
+    def navigate_to_property(self):
+        """Navigate to the property page."""
+        self.navigate_to_page("/property")
+
+    def navigate_to_tenants(self):
+        """Navigate to the tenants page."""
+        self.navigate_to_page("/tenants")
+
+    def navigate_to_expense(self):
+        """Navigate to the expense page."""
+        self.navigate_to_page("/expense")
+
+    def navigate_to_income_history(self):
+        """Navigate to the income/history page."""
+        self.navigate_to_page("/income/history")
+
+    def navigate_to_cashflow(self):
+        """Navigate to the cashflow page."""
+        self.navigate_to_page("/cashflow")
+
+    def navigate_to_tasks(self):
+        """Navigate to the tasks page."""
+        self.navigate_to_page("/tasks")
+
+    def navigate_to_user_profile(self):
+        """Navigate to the user profile page."""
+        self.navigate_to_page("/user/profile")
+
+    def navigate_to_user_files(self):
+        """Navigate to the user files page."""
+        self.navigate_to_page("/user/files")
+
+    def navigate_to_about(self):
+        """Navigate to the about page."""
+        self.navigate_to_page("/about")
+
+    def navigate_to_news(self):
+        """Navigate to the news page."""
+        self.navigate_to_page("/news") 

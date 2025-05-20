@@ -23,11 +23,18 @@ def admin_credentials():
     
     return {"email": email, "password": password}
 
-def test_successful_login(admin_page: AdminPage, admin_credentials: dict):
+def test_successful_login(admin_page: AdminPage, admin_credentials: dict, page_load_helper, test_logger):
     """Test successful login with valid credentials"""
+    test_logger.info("Starting login test")
     admin_page.navigate_to_login()
     admin_page.login(admin_credentials["email"], admin_credentials["password"])
-    expect(admin_page.page).to_have_url(f"{admin_page.base_url}/welcome")
+    
+    # Verify login success with comprehensive page load check
+    page_load_helper.verify_page_loaded(
+        expected_url=f"{admin_page.base_url}/welcome",
+        required_selector="h1"
+    )
+    test_logger.info("Login test completed successfully")
 
 @pytest.mark.parametrize("page_path", [
     #  "/welcome",
@@ -38,8 +45,11 @@ def test_successful_login(admin_page: AdminPage, admin_credentials: dict):
     #  "/admin/settings",
     #  "/admin/reports"
 ])
-def test_admin_pages_load(admin_page: AdminPage, admin_credentials: dict, page_path: str):
+def test_admin_pages_load(admin_page: AdminPage, admin_credentials: dict, 
+                         page_load_helper, screenshot_helper, test_logger, page_path: str):
     """Test that admin pages load correctly after login"""
+    test_logger.info(f"Testing page: {page_path}")
+    
     # First login as admin
     admin_page.navigate_to_login()
     admin_page.login(admin_credentials["email"], admin_credentials["password"])
@@ -47,7 +57,14 @@ def test_admin_pages_load(admin_page: AdminPage, admin_credentials: dict, page_p
     # Test the specific page
     try:
         admin_page.navigate_to_page(page_path)
+        # Verify page load with comprehensive checks
+        page_load_helper.verify_page_loaded(
+            expected_url=f"{admin_page.base_url}{page_path}",
+            required_selector="h1"
+        )
+        test_logger.info(f"Successfully loaded page: {page_path}")
     except Exception as e:
-        # Take screenshot on failure
-        admin_page.page.screenshot(path=f"error-{page_path.replace('/', '-')}.png")
-        pytest.fail(f"Failed to load page {page_path}: {str(e)}")
+        test_logger.error(f"Failed to load page {page_path}: {str(e)}")
+        # Take screenshot on failure using the helper
+        screenshot_path = screenshot_helper.take_error_screenshot(page_path, str(e))
+        pytest.fail(f"Failed to load page {page_path}: {str(e)}\nScreenshot saved to: {screenshot_path}")
