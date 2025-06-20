@@ -26,7 +26,7 @@ cd PlaywrightTesting
 
 2. Create and activate a virtual environment (recommended):
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
 ```
 
@@ -148,3 +148,21 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📧 Contact
 
 For any questions or suggestions, please open an issue in the repository. 
+
+# Admin credentials
+ADMIN_USER_EMAIL=admin@example.com
+ADMIN_USER_PASSWORD=admin_password
+
+# Landlord credentials
+LANDLORD_USER_EMAIL=landlord@example.com
+LANDLORD_USER_PASSWORD=landlord_password
+
+# Tenant credentials
+TenantA_USER_EMAIL=tenantA@example.com
+TenantA_USER_PASSWORD=tenantA_password
+
+TenantB_USER_EMAIL=tenantB@example.com
+TenantB_USER_PASSWORD=tenantB_password
+
+# Base URL for the application
+URL=http://localhost:3000 

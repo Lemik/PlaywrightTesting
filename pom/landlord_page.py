@@ -1,4 +1,5 @@
 from playwright.sync_api import Page, expect
+from helpers.logger import TestLogger
 
 class LandlordPage:
     """Page Object Model for Landlord pages.
@@ -16,6 +17,7 @@ class LandlordPage:
         """
         self.page = page
         self.base_url = base_url
+        self.logger = TestLogger("landlord_page")
 
     def navigate_to_login(self):
         """Navigate to the login page."""
@@ -42,6 +44,16 @@ class LandlordPage:
         self.page.goto(f"{self.base_url}{path}")
         self.page.wait_for_load_state("networkidle")
         expect(self.page).to_have_url(f"{self.base_url}{path}")
+        self._verify_page_content()
+    
+    def navigate_to_page_and_redirect(self, path: str):
+        """Navigate to a specific page and verify it loaded correctly.
+        
+        Args:
+            path (str): Path to navigate to
+        """
+        self.page.goto(f"{self.base_url}{path}")
+        self.page.wait_for_load_state("networkidle")
         self._verify_page_content()
 
     def _verify_page_content(self):
@@ -94,4 +106,98 @@ class LandlordPage:
 
     def navigate_to_news(self):
         """Navigate to the news page."""
-        self.navigate_to_page("/news") 
+        self.navigate_to_page("/news")
+
+    def get_property_cards(self):
+        """Get all property cards on the property page.
+        
+        Returns:
+            List of property card elements
+        """
+        return self.page.locator('.property-card, [data-testid="property-card"], .card').all()
+
+    def click_view_details(self, property_index: int = 0):
+        """Click the 'View Details' button for a specific property.
+        
+        Args:
+            property_index (int): Index of the property card (0-based)
+        """
+        property_cards = self.get_property_cards()
+        if property_index >= len(property_cards):
+            raise ValueError(f"Property index {property_index} is out of range. Found {len(property_cards)} properties.")
+        
+        # Look for view details button within the property card
+        view_details_button = property_cards[property_index].locator(
+            'button:has-text("View Details"), a:has-text("View Details"), [data-testid="view-details"]'
+        ).first
+        view_details_button.click()
+        
+        # Wait for navigation to property information page
+        self.page.wait_for_url(f"{self.base_url}/Property/Information")
+
+    def verify_property_information_tabs(self):
+        """Verify that all tabs on the property information page are loading correctly.
+        
+        Returns:
+            bool: True if all tabs are present and functional
+        """
+        # Wait for the page to load
+        self.page.wait_for_load_state("networkidle")
+        
+        # Common tab selectors - adjust based on your actual implementation
+        tab_selectors = [
+            'button[role="tab"], .tab, [data-testid="tab"]',
+            'a[role="tab"], .nav-link'
+        ]
+        
+        tabs_found = False
+        for selector in tab_selectors:
+            tabs = self.page.locator(selector).all()
+            if tabs:
+                tabs_found = True
+                self.logger.info(f"Found {len(tabs)} tabs with selector: {selector}")
+                break
+        
+        if not tabs_found:
+            self.logger.warning("No tabs found on property information page")
+            return False
+        
+        # Verify that at least one tab is visible and clickable
+        expect(self.page.locator(selector).first).to_be_visible()
+        
+        return True
+
+    def click_property_tab(self, tab_name: str):
+        """Click on a specific tab in the property information page.
+        
+        Args:
+            tab_name (str): Name or text of the tab to click
+        """
+        tab_selector = f'button:has-text("{tab_name}"), a:has-text("{tab_name}"), [data-testid="tab-{tab_name.lower()}"]'
+        self.page.click(tab_selector)
+        self.page.wait_for_load_state("networkidle")
+
+    def verify_property_list_loaded(self):
+        """Verify that the property list page has loaded with properties.
+        
+        Returns:
+            bool: True if properties are visible
+        """
+        # Wait for the page to load
+        self.page.wait_for_load_state("networkidle")
+        
+        # Check for property cards or list items
+        property_selectors = [
+            '.property-card, [data-testid="property-card"], .card',
+            '.property-item, [data-testid="property-item"]',
+            '.property-list-item'
+        ]
+        
+        for selector in property_selectors:
+            properties = self.page.locator(selector).all()
+            if properties:
+                self.logger.info(f"Found {len(properties)} properties with selector: {selector}")
+                return True
+        
+        self.logger.warning("No properties found on property list page")
+        return False 
