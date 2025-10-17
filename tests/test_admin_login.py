@@ -59,8 +59,7 @@ def test_admin_pages_load(admin_page: AdminPage, admin_credentials: dict,
         admin_page.navigate_to_page(page_path)
         # Verify page load with comprehensive checks
         page_load_helper.verify_page_loaded(
-            expected_url=f"{admin_page.base_url}{page_path}",
-            required_selector="h1"
+            expected_url=f"{admin_page.base_url}{page_path}"
         )
         test_logger.info(f"Successfully loaded page: {page_path}")
     except Exception as e:

@@ -22,7 +22,7 @@ def test_form_submission(page, base_url):
     # Fill out a form
     page.fill("#formName", "John Doe")
     page.fill("#formEmail", "john@example.com")
-    page.fill("#formMessage", f"This is a test message from LLHUB {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    page.fill("#formMessage", f"This is a test run for LLhub {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     # Submit the form
     page.click("button[type='submit']")

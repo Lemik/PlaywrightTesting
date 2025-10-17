@@ -20,6 +20,7 @@ class AdminPage:
     def navigate_to_login(self):
         """Navigate to the login page."""
         self.page.goto(f"{self.base_url}/login")
+        self.page.wait_for_load_state("networkidle")
 
     def login(self, email: str, password: str):
         """Perform login with given credentials.
@@ -28,9 +29,43 @@ class AdminPage:
             email (str): Admin user email
             password (str): Admin user password
         """
-        self.page.fill('input[type="email"]', email)
-        self.page.fill('input[type="password"]', password)
-        self.page.click('button.login-button')
+        # Wait for page to be fully loaded
+        self.page.wait_for_load_state("domcontentloaded")
+        
+        # Wait for and fill email input
+        email_input = self.page.locator('input[type="email"]')
+        email_input.wait_for(state="visible", timeout=10000)
+        email_input.fill(email)
+        
+        # Wait for and fill password input
+        password_input = self.page.locator('input[type="password"]')
+        password_input.wait_for(state="visible", timeout=10000)
+        password_input.fill(password)
+        
+        # Try multiple possible selectors for the login button
+        login_button_selectors = [
+            'button.login-button',
+            'button[type="submit"]',
+            'button:has-text("Login")',
+            'button:has-text("Sign in")',
+            'input[type="submit"]',
+            'button:has-text("Log in")'
+        ]
+        
+        button_clicked = False
+        for selector in login_button_selectors:
+            try:
+                button = self.page.locator(selector).first
+                if button.is_visible(timeout=2000):
+                    button.click()
+                    button_clicked = True
+                    break
+            except:
+                continue
+        
+        if not button_clicked:
+            raise Exception("Could not find login button with any known selector")
+        
         self.page.wait_for_url(f"{self.base_url}/welcome")
 
     def navigate_to_page(self, path: str):

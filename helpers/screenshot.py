@@ -2,7 +2,6 @@ from playwright.sync_api import Page
 import os
 from datetime import datetime
 import re
-from .logger import TestLogger
 
 class ScreenshotHelper:
     """Helper class for test screenshots"""
@@ -17,7 +16,6 @@ class ScreenshotHelper:
         self.page = page
         self.test_name = self._sanitize_filename(test_name)
         self.screenshot_dir = "reports/screenshots"
-        self.logger = TestLogger(f"screenshot_{test_name}")
         self._ensure_screenshot_dir()
 
     def _sanitize_filename(self, filename: str) -> str:
@@ -43,7 +41,6 @@ class ScreenshotHelper:
         """Ensure the screenshot directory exists"""
         if not os.path.exists(self.screenshot_dir):
             os.makedirs(self.screenshot_dir)
-            self.logger.info(f"Created screenshot directory: {self.screenshot_dir}")
 
     def take_screenshot(self, name: str, full_page: bool = False):
         """Take a screenshot with a given name.
@@ -59,10 +56,8 @@ class ScreenshotHelper:
         
         try:
             self.page.screenshot(path=screenshot_path, full_page=full_page)
-            self.logger.info(f"Screenshot saved: {screenshot_path}")
             return screenshot_path
         except Exception as e:
-            self.logger.error(f"Failed to take screenshot: {str(e)}")
             raise
 
     def take_error_screenshot(self, page_path: str, error_message: str = None, full_page: bool = True):
